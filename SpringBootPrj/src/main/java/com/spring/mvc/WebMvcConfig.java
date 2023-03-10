@@ -29,7 +29,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
      * @param registry
      */
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/servlet/login_confirm")
                 .addPathPatterns("/servlet/user_logou");
 
