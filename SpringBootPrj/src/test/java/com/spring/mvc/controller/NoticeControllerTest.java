@@ -57,7 +57,7 @@ class NoticeControllerTest {
     }
 
     @Test
-    public void testNoticeDelete() throws Exception {
+    void testNoticeDelete() throws Exception {
 
         String view;
         // 게시물이 정상 삭제된 경우
