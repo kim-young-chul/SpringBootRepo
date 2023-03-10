@@ -2,7 +2,6 @@ package com.spring.mvc.interceptor;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,7 +19,6 @@ import jakarta.servlet.http.HttpSession;
  * @작성일 : 2023. 2. 17.
  * @작성자 : 김영철
  */
-@Component
 public class LoginInterceptor implements HandlerInterceptor {
 
     /**
