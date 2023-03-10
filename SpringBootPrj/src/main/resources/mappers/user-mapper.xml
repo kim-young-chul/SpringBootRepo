@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mvc.dao.UserDao">
+	<select id="selectUser" resultType="userDto" parameterType="userDto">
+		SELECT id, userid, userpw
+		FROM user
+		WHERE id = #{id}
+		LIMIT 1
+	</select>
+	<select id="userLogin" resultType="userDto" parameterType="userDto">
+		SELECT id, userid, userpw, grade
+		FROM user
+<!-- 		WHERE userid = #{userid} -->
+<!-- 		AND   userpw = #{userpw} -->
+		WHERE userid = '${userid}'
+		AND userpw = '${userpw}'
+		LIMIT 1
+	</select>
+	<insert id="insertUser" parameterType="userDto">
+		INSERT INTO user
+		VALUES (#{id}, #{userid}, #{userpw})
+	</insert>
+</mapper>

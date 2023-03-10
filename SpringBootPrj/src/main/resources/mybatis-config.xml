@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	<!-- 로그 출력 설정 -->
+	<settings>
+		<setting name="logImpl" value="LOG4J2"></setting>
+	</settings>
+	<!-- 사용하려는 DTO에 대한 축약 이름 -->
+	<typeAliases>
+		<typeAlias type="com.spring.mvc.dto.UserDto" alias="userdto" />
+		<typeAlias type="com.spring.mvc.dto.NoticeDto" alias="noticeDto" />
+	</typeAliases>
+
+	<!-- 사용할 쿼리에 대한 등록 -->
+	<mappers>
+		<mapper resource="mappers/user-mapper.xml" />
+		<mapper resource="mappers/notice-mapper.xml" />
+	</mappers>
+
+</configuration>
