@@ -23,5 +23,4 @@ class SpringBootPrjApplication {
     public static void main(final String[] args) {
         SpringApplication.run(SpringBootPrjApplication.class, args);
     }
-
 }
