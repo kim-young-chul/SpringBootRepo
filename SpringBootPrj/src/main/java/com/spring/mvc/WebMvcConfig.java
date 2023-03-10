@@ -23,19 +23,20 @@ import com.spring.mvc.interceptor.ServletInterceptor;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    /**
+     * @메소드타입 : WebMvcConfig
+     * @메소드명 : addInterceptors
+     * @param registry
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns("/servlet/login_confirm")
+        registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/servlet/login_confirm")
                 .addPathPatterns("/servlet/user_logou");
 
-        registry.addInterceptor(new RootInterceptor())
-                .addPathPatterns("/**");
+        registry.addInterceptor(new RootInterceptor()).addPathPatterns("/**");
 
-        registry.addInterceptor(new ServletInterceptor())
-                .addPathPatterns("/servlet/**")
-                .excludePathPatterns("/servlet/user_login")
-                .excludePathPatterns("/servlet/login_confirm")
+        registry.addInterceptor(new ServletInterceptor()).addPathPatterns("/servlet/**")
+                .excludePathPatterns("/servlet/user_login").excludePathPatterns("/servlet/login_confirm")
                 .excludePathPatterns("/servlet/user_logout");
     }
 }
