@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.mvc.dto.NoticeDto;
@@ -20,6 +21,7 @@ import com.spring.mvc.service.NoticeService;
  * @작성자 : 김영철
  */
 @Controller
+@RequestMapping("/")
 public class NoticeController {
 
     /**
