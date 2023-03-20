@@ -24,6 +24,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.nimbusds.jose.JOSEException;
 import com.spring.mvc.dto.UserDto;
@@ -37,11 +38,12 @@ import lombok.extern.slf4j.Slf4j;
  * @프로젝트명 : SpringBootPrj
  * @패키지명 : com.spring.mvc.controller
  * @파일명 : LoginRestController.java
- * @작성일 : 2023. 3. 20.
+ * @작성일 : 2023. 3. 21.
  * @작성자 : 김영철
  */
 @Slf4j
 @RestController
+@RequestMapping("/api")
 public class LoginRestController {
 
     /**
@@ -82,26 +84,30 @@ public class LoginRestController {
 
     /**
      * @메소드타입 : LoginRestController
-     * @메소드명 : restUserLogin
+     * @메소드명 : userLogin
      * @return : ResponseEntity<String>
      * @return
-     * @throws JOSEException 
+     * @throws JOSEException
      */
-    @GetMapping("/api/user_login")
-    public ResponseEntity<String> restUserLogin() throws JOSEException {
+    @GetMapping("/user_login")
+    public ResponseEntity<String> userLogin() throws JOSEException {
         return ResponseEntity.ok(keyPairVo.getPemPublicKey());
-//        JwtUtil jwtUtil = new JwtUtil();
-//        String jwtString = jwtUtil.createToken("hong-gi-dong2");
-//        ResponseCookie cookie = ResponseCookie.from("jwt", jwtString)
-//                .httpOnly(true)
-//                .secure(true)
-//                .path("/")
-//                .maxAge(600)
-//                .domain("aihub.com")
-//                .sameSite("None")
-//                .build();
-//        log.info("cookie ... {}", cookie.toString());
-//        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(keyPairVo.getPemPublicKey());
+    }
+
+    /**
+     * @메소드타입 : LoginRestController
+     * @메소드명 : userLogout
+     * @return : ResponseEntity<String>
+     * @return
+     * @throws JOSEException
+     */
+    @GetMapping("/user_logout")
+    public ResponseEntity<String> userLogout() {
+        // 쿠키 삭제
+        ResponseCookie cookie = ResponseCookie.from("jwt", null).httpOnly(true).secure(true).path("/").maxAge(0)
+                .domain("aihub.com").sameSite("None").build();
+        log.info("cookie delete ... {}", cookie.toString());
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("logoutSuccess");
     }
 
     /**
@@ -119,36 +125,30 @@ public class LoginRestController {
      * @throws ParseException
      * @throws JOSEException
      */
-    @PostMapping("/api/login_confirm")
+    @PostMapping("/login_confirm")
     public ResponseEntity<String> loginConfirm(UserDto userDto)
             throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidAlgorithmParameterException, ParseException, JOSEException {
-        
+
         log.info("userid ... {}", userDto.getUserid());
         log.info("userpw ... {}", userDto.getUserpw());
-        
+
         // 비밀번호 복호화, 사용자 조회
         final PrivateKey privateKey = keyPairVo.getPrivateKey();
         final UserDto userDtoOut = loginService.loginConfirm(privateKey, userDto);
-        
+
         // 로그인 성공 시
         if (userDtoOut != null) {
-            
+
             // 토큰 생성
             JwtUtil jwtUtil = new JwtUtil();
             String jwtString = jwtUtil.createToken(userDtoOut.getUserid());
-            
+
             // 쿠키 생성
-            ResponseCookie cookie = ResponseCookie.from("jwt", jwtString)
-                    .httpOnly(true)
-                    .secure(true)
-                    .path("/")
-                    .maxAge(600)
-                    .domain("aihub.com")
-                    .sameSite("None")
-                    .build();
-            log.info("cookie ... {}", cookie.toString());
-            
+            ResponseCookie cookie = ResponseCookie.from("jwt", jwtString).httpOnly(true).secure(true).path("/")
+                    .maxAge(600).domain("aihub.com").sameSite("None").build();
+            log.info("cookie create ... {}", cookie.toString());
+
             // 로그인 성공 시 응답
             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("loginSuccess");
         }
