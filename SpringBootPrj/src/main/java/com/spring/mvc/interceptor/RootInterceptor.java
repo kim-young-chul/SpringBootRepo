@@ -1,13 +1,11 @@
 package com.spring.mvc.interceptor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @프로젝트명 : AIBK
@@ -16,20 +14,15 @@ import jakarta.servlet.http.HttpServletResponse;
  * @작성일 : 2023. 2. 17.
  * @작성자 : 김영철
  */
+@Slf4j
 public class RootInterceptor implements HandlerInterceptor {
-
-    /**
-     * @필드타입 : Logger
-     * @필드명 : LOG
-     */
-    private static final Logger LOG = LogManager.getLogger(RootInterceptor.class);
 
     /**
      * @메소드타입 : RootInterceptor
      */
     public RootInterceptor() {
         super();
-        LOG.debug("RootInterceptor ... ");
+        log.info("RootInterceptor ... ");
     }
 
     /**
@@ -44,8 +37,9 @@ public class RootInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler)
             throws Exception {
+
         String theMethod = request.getMethod();
-        LOG.trace("theMethod ... {}", theMethod);
+        log.info("theMethod ... {}", theMethod);
         if (theMethod.equals("GET") || theMethod.equals("POST")) {
             // GET, POST methods are allowed
             return true;
@@ -68,6 +62,7 @@ public class RootInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(final HttpServletRequest request, final HttpServletResponse response, final Object handler,
             final ModelAndView modelAndView) throws Exception {
+
         response.setHeader("Allow", "POST, GET");
     }
 }

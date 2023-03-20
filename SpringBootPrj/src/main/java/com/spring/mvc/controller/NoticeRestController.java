@@ -10,6 +10,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nimbusds.jose.JOSEException;
 import com.spring.mvc.dto.NoticeDto;
 import com.spring.mvc.service.NoticeService;
-import com.spring.mvc.util.JwtUtil;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -52,22 +51,18 @@ public class NoticeRestController {
      */
     @SuppressWarnings("unchecked")
     @GetMapping("/notice_list")
-    public ResponseEntity<String> noticeList(final NoticeDto nDto) throws JOSEException, ParseException {
+    public ResponseEntity<String> noticeList(@CookieValue(name = "jwt", defaultValue = "default-jwt") String jwtString)
+            throws JOSEException, ParseException {
+        log.info("jwtString ... {}", jwtString);
         JSONArray arr = new JSONArray();
-        JwtUtil jwtUtil = new JwtUtil();
-        String userid = jwtUtil.verifyToken(nDto.getContent());
-        String response = null;
-        if (userid != null) {
-            List<NoticeDto> noticeDtoLst = noticeService.selectNotice();
-            for (NoticeDto noticeDto : noticeDtoLst) {
-                arr.add(noticeDto.getJsonObj());
-            }
-            log.info("response ... {}", arr.toString());
-            response = arr.toString();
-        } else {
-            response = "notAllowed";
+        String responseData = null;
+        List<NoticeDto> noticeDtoLst = noticeService.selectNotice();
+        for (NoticeDto noticeDto : noticeDtoLst) {
+            arr.add(noticeDto.getJsonObj());
         }
-        return ResponseEntity.ok(response);
+        log.info("response ... {}", arr.toString());
+        responseData = arr.toString();
+        return ResponseEntity.ok(responseData);
     }
 
     /**

@@ -10,7 +10,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.spring.mvc.interceptor.CookieInterceptor;
+import com.spring.mvc.interceptor.CookieRestInterceptor;
 import com.spring.mvc.interceptor.LoginInterceptor;
+import com.spring.mvc.interceptor.RootInterceptor;
 import com.spring.mvc.interceptor.ServletInterceptor;
 
 /**
@@ -31,15 +34,27 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
+        registry.addInterceptor(new RootInterceptor())
+                .addPathPatterns("/**");
+        
+        registry.addInterceptor(new CookieRestInterceptor())
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/api/user_login")
+                .excludePathPatterns("/api/login_confirm");
+                
+        registry.addInterceptor(new CookieInterceptor())
+                .addPathPatterns("/servlet/user_login")
+                .addPathPatterns("/servlet/notice_list");
+        
+        registry.addInterceptor(new LoginInterceptor())
+                .addPathPatterns("/servlet/login_confirm")
+                .addPathPatterns("/servlet/user_logout");
+        
         registry.addInterceptor(new ServletInterceptor())
                 .addPathPatterns("/servlet/**")
                 .excludePathPatterns("/servlet/user_login")
                 .excludePathPatterns("/servlet/login_confirm")
                 .excludePathPatterns("/servlet/user_logout");
-
-        registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns("/servlet/login_confirm")
-                .addPathPatterns("/servlet/user_logout");
     }
 
     /**

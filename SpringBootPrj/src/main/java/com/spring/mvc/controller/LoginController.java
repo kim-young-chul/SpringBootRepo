@@ -70,15 +70,11 @@ public class LoginController {
      */
     @GetMapping("/servlet/user_login")
     public ModelAndView userLogin(final HttpSession session) throws NoSuchAlgorithmException, IOException {
-
         final ModelAndView mav = new ModelAndView();
-
         KeyPairVo keyPairVo = loginService.userLogin();
-
         session.setAttribute("privateKey", keyPairVo.getPrivateKey());
         mav.addObject("base64PublicKey", keyPairVo.getPemPublicKey());
         mav.setViewName("user_login");
-
         return mav;
     }
 

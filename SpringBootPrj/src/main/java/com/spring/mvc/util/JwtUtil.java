@@ -49,12 +49,19 @@ public class JwtUtil {
         // 정보 (payload)
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 // registered claims
-                .issuer("aihub.com").subject("user_certification").audience("ironman").expirationTime(new Date(longExp))
-                .notBeforeTime(new Date(longIat)).issueTime(new Date(longIat)).jwtID("avengers")
+                .issuer("aihub.com")
+                .subject("certification")
+                .audience("avengers")
+                .expirationTime(new Date(longExp))
+                .notBeforeTime(new Date(longIat))
+                .issueTime(new Date(longIat))
+                .jwtID("endgame")
                 // public claims
                 .claim("https://aihub.com/jwt_claims/is_member", true)
                 // private claims
-                .claim("userid", userid).claim("username", "tony_stark").build();
+                .claim("userid", userid)
+                .claim("username", "ironman")
+                .build();
         log.info("clamsSet ... {}", claimsSet.toString());
         // 헤더 (header) HMAC SHA256
         SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);

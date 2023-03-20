@@ -19,26 +19,25 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nimbusds.jose.JOSEException;
 import com.spring.mvc.dto.UserDto;
 import com.spring.mvc.service.LoginService;
 import com.spring.mvc.util.JwtUtil;
 import com.spring.mvc.util.RSAUtil;
 import com.spring.mvc.vo.KeyPairVo;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @프로젝트명 : SpringBootPrj
  * @패키지명 : com.spring.mvc.controller
  * @파일명 : LoginRestController.java
- * @작성일 : 2023. 3. 11.
+ * @작성일 : 2023. 3. 20.
  * @작성자 : 김영철
  */
 @Slf4j
@@ -86,17 +85,29 @@ public class LoginRestController {
      * @메소드명 : restUserLogin
      * @return : ResponseEntity<String>
      * @return
+     * @throws JOSEException 
      */
     @GetMapping("/api/user_login")
-    public ResponseEntity<String> restUserLogin() {
+    public ResponseEntity<String> restUserLogin() throws JOSEException {
         return ResponseEntity.ok(keyPairVo.getPemPublicKey());
+//        JwtUtil jwtUtil = new JwtUtil();
+//        String jwtString = jwtUtil.createToken("hong-gi-dong2");
+//        ResponseCookie cookie = ResponseCookie.from("jwt", jwtString)
+//                .httpOnly(true)
+//                .secure(true)
+//                .path("/")
+//                .maxAge(600)
+//                .domain("aihub.com")
+//                .sameSite("None")
+//                .build();
+//        log.info("cookie ... {}", cookie.toString());
+//        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(keyPairVo.getPemPublicKey());
     }
 
     /**
      * @메소드타입 : LoginRestController
      * @메소드명 : loginConfirm
      * @return : ResponseEntity<String>
-     * @param session
      * @param userDto
      * @return
      * @throws InvalidKeyException
@@ -106,26 +117,42 @@ public class LoginRestController {
      * @throws BadPaddingException
      * @throws InvalidAlgorithmParameterException
      * @throws ParseException
-     * @throws JsonProcessingException
-     * @throws JOSEException 
+     * @throws JOSEException
      */
     @PostMapping("/api/login_confirm")
     public ResponseEntity<String> loginConfirm(UserDto userDto)
             throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException,
-            BadPaddingException, InvalidAlgorithmParameterException, ParseException, JsonProcessingException, JOSEException {
-
+            BadPaddingException, InvalidAlgorithmParameterException, ParseException, JOSEException {
+        
         log.info("userid ... {}", userDto.getUserid());
         log.info("userpw ... {}", userDto.getUserpw());
-
+        
+        // 비밀번호 복호화, 사용자 조회
         final PrivateKey privateKey = keyPairVo.getPrivateKey();
         final UserDto userDtoOut = loginService.loginConfirm(privateKey, userDto);
-
-        String response = "loginFailed";
+        
+        // 로그인 성공 시
         if (userDtoOut != null) {
-            response = "loginSuccess";
+            
+            // 토큰 생성
             JwtUtil jwtUtil = new JwtUtil();
-            response = jwtUtil.createToken(userDtoOut.getUserid());
+            String jwtString = jwtUtil.createToken(userDtoOut.getUserid());
+            
+            // 쿠키 생성
+            ResponseCookie cookie = ResponseCookie.from("jwt", jwtString)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(600)
+                    .domain("aihub.com")
+                    .sameSite("None")
+                    .build();
+            log.info("cookie ... {}", cookie.toString());
+            
+            // 로그인 성공 시 응답
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("loginSuccess");
         }
-        return ResponseEntity.ok(response);
+        // 로그인 실패 시 응답
+        return ResponseEntity.ok("loginFailed");
     }
 }
