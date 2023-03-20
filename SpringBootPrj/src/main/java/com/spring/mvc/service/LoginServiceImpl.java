@@ -18,8 +18,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,6 +32,8 @@ import com.spring.mvc.util.SHAUtil;
 import com.spring.mvc.vo.CryptoVo;
 import com.spring.mvc.vo.KeyPairVo;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @프로젝트명 : AIBK-Security
  * @패키지명 : com.spring.mvc.service
@@ -41,15 +41,10 @@ import com.spring.mvc.vo.KeyPairVo;
  * @작성일 : 2023. 3. 4.
  * @작성자 : 김영철
  */
+@Slf4j
 @Service
 @Transactional
 public class LoginServiceImpl implements LoginService {
-
-    /**
-     * @필드타입 : Logger
-     * @필드명 : LOG
-     */
-    private static final Logger LOG = LogManager.getLogger(LoginServiceImpl.class);
 
     /**
      * @필드타입 : int
@@ -85,7 +80,7 @@ public class LoginServiceImpl implements LoginService {
         UserDto userDtoOut = null;
         String decryptedPw = decryptPw(privateKey, userDto);
         userDto.setUserpw(decryptedPw);
-        LOG.debug("decryptedPw ... {}", decryptedPw);
+        log.info("decryptedPw ... {}", decryptedPw);
         if (this.verifyPattern(userDto)) {
             String encryptedPw = this.encryptPw(userDto);
             userDto.setUserpw(encryptedPw);
@@ -143,6 +138,12 @@ public class LoginServiceImpl implements LoginService {
         String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
         CryptoVo cryptoVo = parsPwJson(decodedString);
 
+        log.info("v ... {}", cryptoVo.getVersion());
+        log.info("iv ... {}", cryptoVo.getIv());
+        log.info("key ... {}", cryptoVo.getKeys().get("key"));
+        log.info("value ... {}", cryptoVo.getKeys().get("value"));
+        log.info("cipher ... {}", cryptoVo.getCipher());
+
         RSAUtil rsaUtil = new RSAUtil();
         final String rsaCipher = "RSA/ECB/OAEPWithSHA-1AndMGF1Padding";
 
@@ -154,7 +155,7 @@ public class LoginServiceImpl implements LoginService {
         final String aesIv = cryptoVo.getIv();
         final String aesEncText = cryptoVo.getCipher();
         String decryptedPw = aesUtil.decrypt(aesCipher, aesSeckey, aesIv, aesEncText);
-        LOG.debug("decryptedPw ... {}", decryptedPw);
+        log.info("decryptedPw ... {}", decryptedPw);
 
         return aesUtil.noPadding(decryptedPw);
     }
@@ -169,8 +170,8 @@ public class LoginServiceImpl implements LoginService {
     private boolean verifyPattern(final UserDto userDto) {
         final boolean userIdResult = Pattern.matches("[A-Za-z0-9-_]*", userDto.getUserid());
         final boolean userPwResult = Pattern.matches("[A-Za-z0-9-_!@#%+]*", userDto.getUserpw());
-        LOG.debug("userIdResult ... {}", userIdResult);
-        LOG.debug("userPwResult ... {}", userPwResult);
+        log.info("userIdResult ... {}", userIdResult);
+        log.info("userPwResult ... {}", userPwResult);
         return userIdResult && userPwResult;
     }
 

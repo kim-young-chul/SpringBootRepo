@@ -1,7 +1,6 @@
 package com.spring.mvc.dto;
 
 import org.apache.ibatis.type.Alias;
-
 import lombok.Data;
 
 /**
@@ -14,21 +13,25 @@ import lombok.Data;
 @Data
 @Alias("userDto")
 public class UserDto {
+
     /**
      * @필드타입 : int
      * @필드명 : id
      */
     private int id; // 일련번호
+
     /**
      * @필드타입 : String
      * @필드명 : userid
      */
     private String userid; // 사용자 아이디
+
     /**
      * @필드타입 : String
      * @필드명 : userpw
      */
     private String userpw; // 사용자 비밀번호
+
     /**
      * @필드타입 : String
      * @필드명 : grade

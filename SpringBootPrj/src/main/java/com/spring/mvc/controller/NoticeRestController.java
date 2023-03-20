@@ -1,0 +1,142 @@
+/**
+  * @파일명 : NoticeRestController.java
+  * @작성일 : 2023. 3. 13.
+  * @작성자 : 김영철
+  */
+package com.spring.mvc.controller;
+
+import java.text.ParseException;
+import java.util.List;
+import org.json.simple.JSONArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.nimbusds.jose.JOSEException;
+import com.spring.mvc.dto.NoticeDto;
+import com.spring.mvc.service.NoticeService;
+import com.spring.mvc.util.JwtUtil;
+
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * @프로젝트명 : SpringBootPrj
+ * @패키지명 : com.spring.mvc.controller
+ * @파일명 : NoticeRestController.java
+ * @작성일 : 2023. 3. 13.
+ * @작성자 : 김영철
+ */
+
+@Slf4j
+@RestController
+@RequestMapping("/api")
+public class NoticeRestController {
+
+    /**
+     * @필드타입 : NoticeService
+     * @필드명 : noticeService
+     */
+    @Autowired
+    private NoticeService noticeService;
+
+    /**
+     * @메소드타입 : NoticeRestController
+     * @메소드명 : noticeList
+     * @return : ResponseEntity<String>
+     * @return
+     * @throws ParseException
+     * @throws JOSEException
+     */
+    @SuppressWarnings("unchecked")
+    @GetMapping("/notice_list")
+    public ResponseEntity<String> noticeList(final NoticeDto nDto) throws JOSEException, ParseException {
+        JSONArray arr = new JSONArray();
+        JwtUtil jwtUtil = new JwtUtil();
+        String userid = jwtUtil.verifyToken(nDto.getContent());
+        String response = null;
+        if (userid != null) {
+            List<NoticeDto> noticeDtoLst = noticeService.selectNotice();
+            for (NoticeDto noticeDto : noticeDtoLst) {
+                arr.add(noticeDto.getJsonObj());
+            }
+            log.info("response ... {}", arr.toString());
+            response = arr.toString();
+        } else {
+            response = "notAllowed";
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * @메소드타입 : NoticeRestController
+     * @메소드명 : noticeUpdate
+     * @return : ResponseEntity<String>
+     * @param noticeDto
+     * @return
+     */
+    @GetMapping("/notice_update")
+    public ResponseEntity<String> noticeUpdate(final NoticeDto noticeDto) {
+        final NoticeDto noticeDtoOut = noticeService.selectOneNotice(noticeDto);
+        return ResponseEntity.ok(noticeDtoOut.getJsonObj().toString());
+    }
+
+    /**
+     * @메소드타입 : NoticeRestController
+     * @메소드명 : updateNotice
+     * @return : ResponseEntity<String>
+     * @param noticeDto
+     * @return
+     */
+    @PostMapping("/update_notice")
+    public ResponseEntity<String> updateNotice(final NoticeDto noticeDto) {
+        String response;
+        int rows = noticeService.updateNotice(noticeDto);
+        if (rows > 0) {
+            response = "updateSuccess";
+        } else {
+            response = "updateFailed";
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * @메소드타입 : NoticeRestController
+     * @메소드명 : noticeDelete
+     * @return : ResponseEntity<String>
+     * @param noticeDto
+     * @return
+     */
+    @GetMapping("/notice_delete")
+    public ResponseEntity<String> noticeDelete(final NoticeDto noticeDto) {
+        String response;
+        int rows = noticeService.deleteNotice(noticeDto);
+        if (rows > 0) {
+            response = "deleteSuccess";
+        } else {
+            response = "deleteFailed";
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * @메소드타입 : NoticeRestController
+     * @메소드명 : insertNotice
+     * @return : ResponseEntity<String>
+     * @param noticeDto
+     * @return
+     */
+    @PostMapping("/insert_notice")
+    public ResponseEntity<String> insertNotice(final NoticeDto noticeDto) {
+        String response;
+        int rows = noticeService.insertNotice(noticeDto);
+        if (rows > 0) {
+            response = "insertSuccess";
+        } else {
+            response = "insertFailed";
+        }
+        return ResponseEntity.ok(response);
+    }
+}

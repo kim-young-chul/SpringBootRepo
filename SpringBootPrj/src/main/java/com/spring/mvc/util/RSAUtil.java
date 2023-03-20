@@ -8,6 +8,7 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.util.Base64;
 import javax.crypto.BadPaddingException;
@@ -81,7 +82,7 @@ public class RSAUtil {
      * @param input
      * @param algorithm
      */
-    public SecretKey getSecretKey(final String standardCipher, final Key key, final String input,
+    public SecretKey getSecretKey(final String standardCipher, final PrivateKey key, final String input,
             final String algorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
         byte[] decodeInput = Base64.getDecoder().decode(input.getBytes(StandardCharsets.UTF_8));

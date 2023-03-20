@@ -1,6 +1,7 @@
 package com.spring.mvc.dto;
 
 import org.apache.ibatis.type.Alias;
+import org.json.simple.JSONObject;
 
 import lombok.Data;
 
@@ -32,4 +33,19 @@ public class NoticeDto {
      * @필드명 : content
      */
     private String content;
+
+    /**
+     * @메소드타입 : NoticeDto
+     * @메소드명 : getJsonObj
+     * @return : JSONObject
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public JSONObject getJsonObj() {
+        JSONObject obj = new JSONObject();
+        obj.put("idnotice", this.idnotice);
+        obj.put("subject", this.subject);
+        obj.put("content", this.content);
+        return obj;
+    }
 }
