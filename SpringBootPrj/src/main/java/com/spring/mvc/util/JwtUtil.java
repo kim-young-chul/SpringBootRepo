@@ -45,7 +45,7 @@ public class JwtUtil {
         // 현재 시간
         long longIat = new Date().getTime();
         // 만료 시간
-        long longExp = new Date().getTime() + 1000 * 60L * 60L * 2L; // 2시간
+        long longExp = new Date().getTime() + 1000 * 60L * 10L; // 10분
         // 정보 (payload)
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 // registered claims

@@ -83,6 +83,7 @@ public class LoginServiceImpl implements LoginService {
         log.info("decryptedPw ... {}", decryptedPw);
         if (this.verifyPattern(userDto)) {
             String encryptedPw = this.encryptPw(userDto);
+            log.info("encryptedPw ... {}", encryptedPw);
             userDto.setUserpw(encryptedPw);
             userDtoOut = userDao.userLogin(userDto);
         }

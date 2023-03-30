@@ -3,12 +3,15 @@ package com.spring.mvc.controller;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import com.spring.mvc.dto.UserDto;
 import com.spring.mvc.service.LoginService;
+import com.spring.mvc.util.RSAUtil;
 import com.spring.mvc.vo.KeyPairVo;
 
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +36,12 @@ import jakarta.servlet.http.HttpSession;
  */
 @Controller
 public class LoginController {
+
+    /**
+     * @필드타입 : int
+     * @필드명 : RSA_KEY_SIZE
+     */
+    static final int RSA_KEY_SIZE = 2048;
 
     /**
      * @필드타입 : String
@@ -53,10 +63,26 @@ public class LoginController {
     private LoginService loginService;
 
     /**
+     * @필드타입 : KeyPairVo
+     * @필드명 : keyPairVo
+     */
+    private KeyPairVo keyPairVo;
+
+    /**
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
      * @메소드타입 : LoginController
      */
-    public LoginController() {
+    public LoginController() throws NoSuchAlgorithmException, IOException {
         LOG.trace("LoginController ... ");
+        final RSAUtil rsaUtil = new RSAUtil();
+        KeyPair keyPair = rsaUtil.generatorKeyPair("RSA", RSA_KEY_SIZE);
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
+        String pemPublicKey = rsaUtil.convertKeytoPEM(publicKey);
+        keyPairVo = new KeyPairVo();
+        keyPairVo.setPemPublicKey(pemPublicKey);
+        keyPairVo.setPrivateKey(privateKey);
     }
 
     /**
@@ -65,14 +91,21 @@ public class LoginController {
      * @return : ModelAndView
      * @param session
      * @return
-     * @throws NoSuchAlgorithmException
      * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws Exception
      */
     @GetMapping("/servlet/user_login")
     public ModelAndView userLogin(final HttpSession session) throws NoSuchAlgorithmException, IOException {
+
         final ModelAndView mav = new ModelAndView();
-        KeyPairVo keyPairVo = loginService.userLogin();
-        session.setAttribute("privateKey", keyPairVo.getPrivateKey());
+//        KeyPairVo keyPairVo;
+//        if (session.getAttribute("keyPairVo") == null) {
+//            keyPairVo = loginService.userLogin();
+//            session.setAttribute("keyPairVo", keyPairVo);
+//        } else {
+//            keyPairVo = (KeyPairVo) session.getAttribute("keyPairVo");
+//        }
         mav.addObject("base64PublicKey", keyPairVo.getPemPublicKey());
         mav.setViewName("user_login");
         return mav;
@@ -97,20 +130,24 @@ public class LoginController {
      * @param session
      * @param userDto
      * @return
-     * @throws InvalidKeyException
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchPaddingException
-     * @throws IllegalBlockSizeException
-     * @throws BadPaddingException
-     * @throws InvalidAlgorithmParameterException
      * @throws ParseException
+     * @throws InvalidAlgorithmParameterException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws Exception
      */
     @PostMapping("/servlet/login_confirm")
     public ModelAndView loginConfirm(final HttpSession session, final UserDto userDto)
             throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException,
             BadPaddingException, InvalidAlgorithmParameterException, ParseException {
-        final PrivateKey privateKey = (PrivateKey) session.getAttribute("privateKey");
-        final ModelAndView mav = new ModelAndView();
+
+//        KeyPairVo keyPairVo = (KeyPairVo) session.getAttribute("keyPairVo");
+        final PrivateKey privateKey = keyPairVo.getPrivateKey();
+
+        ModelAndView mav = new ModelAndView();
         final UserDto userDtoOut = loginService.loginConfirm(privateKey, userDto);
         if (userDtoOut == null) {
             mav.setViewName(REUSRLOGIN);

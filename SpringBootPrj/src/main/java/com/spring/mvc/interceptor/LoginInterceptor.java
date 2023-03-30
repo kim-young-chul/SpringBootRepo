@@ -1,7 +1,5 @@
 package com.spring.mvc.interceptor;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -11,6 +9,7 @@ import com.spring.mvc.dto.UserDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @프로젝트명 : AIBK
@@ -19,13 +18,8 @@ import jakarta.servlet.http.HttpSession;
  * @작성일 : 2023. 2. 17.
  * @작성자 : 김영철
  */
+@Slf4j
 public class LoginInterceptor implements HandlerInterceptor {
-
-    /**
-     * @필드타입 : Logger
-     * @필드명 : LOG
-     */
-    private static final Logger LOG = LogManager.getLogger(LoginInterceptor.class);
 
     /**
      * @필드타입 : String
@@ -43,7 +37,7 @@ public class LoginInterceptor implements HandlerInterceptor {
      */
     public LoginInterceptor() {
         super();
-        LOG.debug("LoginInterceptor ... ");
+        log.info("LoginInterceptor ... ");
     }
 
     /**
@@ -57,17 +51,17 @@ public class LoginInterceptor implements HandlerInterceptor {
         String userid = request.getParameter("userid");
         String userpw = request.getParameter("userpw");
         if (userid != null) {
-            LOG.debug("userid ... {}", userid);
+            log.info("userid ... {}", userid);
         }
         if (userpw != null) {
-            LOG.debug("userpw ... {}", userpw);
+            log.info("userpw ... {}", userpw);
         }
 
         HttpSession session = request.getSession();
-        LOG.trace("session.getId ... {}", session.getId());
+        log.trace("session.getId ... {}", session.getId());
 
         if (session.getAttribute(LOGIN) != null) {
-            LOG.trace("LOGIN is not null ... ");
+            log.trace("LOGIN is not null ... ");
             session.removeAttribute(LOGIN);
             session.removeAttribute(GRADE);
 
@@ -84,7 +78,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             final ModelAndView modelAndView) throws Exception {
 
         HttpSession session = request.getSession();
-        LOG.trace("session.getId ... {}", session.getId());
+        log.trace("session.getId ... {}", session.getId());
 
         ModelMap mm = modelAndView.getModelMap();
         UserDto userDto = null;
@@ -92,18 +86,20 @@ public class LoginInterceptor implements HandlerInterceptor {
 
         if (userDto != null && userDto.getUserid() != null && userDto.getUserpw() != null) {
             session.invalidate();
+            log.info("session.invalidate ...");
             session = request.getSession();
+            log.info("session.getId ... {}", session.getId());
 
-            LOG.trace("userDto.getUserid ... {}", userDto.getUserid());
-            LOG.trace("userDto.getGrade ... {}", userDto.getGrade());
+            log.info("userDto.getUserid ... {}", userDto.getUserid());
+            log.info("userDto.getGrade ... {}", userDto.getGrade());
 
             session.setAttribute(LOGIN, userDto.getUserid());
             session.setAttribute(GRADE, userDto.getGrade());
 
-            LOG.trace("session.getAttribute(LOGIN) ... {}", session.getAttribute(LOGIN));
-            LOG.trace("session.getAttribute(GRADE) ... {}", session.getAttribute(GRADE));
+            log.info("session.getAttribute(LOGIN) ... {}", session.getAttribute(LOGIN));
+            log.info("session.getAttribute(GRADE) ... {}", session.getAttribute(GRADE));
 
-            LOG.trace("LoginSuccess ... ");
+            log.trace("LoginSuccess ... ");
         }
     }
 }

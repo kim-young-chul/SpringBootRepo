@@ -108,7 +108,8 @@ public class NoticeController {
         if (rows > 0) {
             view = RE_NOTICE_LIST;
         } else {
-            view = "error";
+//            view = "error";
+            view = RE_NOTICE_LIST;
         }
         return view;
     }
@@ -140,7 +141,8 @@ public class NoticeController {
         if (rows > 0) {
             view = RE_NOTICE_LIST;
         } else {
-            view = "error";
+//            view = "error";
+            view = RE_NOTICE_LIST;
         }
         return view;
     }

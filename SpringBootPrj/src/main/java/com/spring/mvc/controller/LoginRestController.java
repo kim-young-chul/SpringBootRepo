@@ -104,8 +104,15 @@ public class LoginRestController {
     @GetMapping("/user_logout")
     public ResponseEntity<String> userLogout() {
         // 쿠키 삭제
-        ResponseCookie cookie = ResponseCookie.from("jwt", null).httpOnly(true).secure(true).path("/").maxAge(0)
-                .domain("aihub.com").sameSite("None").build();
+        ResponseCookie cookie = ResponseCookie
+                .from("jwt", null)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .domain("aihub.com")
+                .sameSite("None")
+                .build();
         log.info("cookie delete ... {}", cookie.toString());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("logoutSuccess");
     }
@@ -145,8 +152,15 @@ public class LoginRestController {
             String jwtString = jwtUtil.createToken(userDtoOut.getUserid());
 
             // 쿠키 생성
-            ResponseCookie cookie = ResponseCookie.from("jwt", jwtString).httpOnly(true).secure(true).path("/")
-                    .maxAge(600).domain("aihub.com").sameSite("None").build();
+            ResponseCookie cookie = ResponseCookie
+                    .from("jwt", jwtString)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(600)
+                    .domain("aihub.com")
+                    .sameSite("None")
+                    .build();
             log.info("cookie create ... {}", cookie.toString());
 
             // 로그인 성공 시 응답

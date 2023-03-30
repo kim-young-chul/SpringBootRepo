@@ -39,7 +39,8 @@ public class RootInterceptor implements HandlerInterceptor {
             throws Exception {
 
         String theMethod = request.getMethod();
-        log.info("theMethod ... {}", theMethod);
+        log.info("theMethod ... {} ... {}", theMethod, request.getRequestURI());
+        
         if (theMethod.equals("GET") || theMethod.equals("POST")) {
             // GET, POST methods are allowed
             return true;
