@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html" pageEncoding="utf-8" %>
+<%@ page language="java" contentType="text/html" pageEncoding="utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -13,7 +13,8 @@
 <body>
 	<div class="header">header</div>
 	<div class="logout">
-		<input class="write_button" type="button" id="userLogout" name="userLogout" value="로그아웃" />
+		<input class="write_button" type="button" id="userLogout"
+			name="userLogout" value="로그아웃" />
 	</div>
 	<div class="nav">navigator</div>
 	<div class="content">
@@ -30,21 +31,18 @@
 				</tr>
 			</thead>
 			<tbody id="noticeList">
-				<c:forEach items="${noticeList}" var="notice">
+				<c:forEach var="notice" items="${noticeList}">
 					<tr>
 						<td>${notice.idnotice}</td>
 						<td><c:choose>
 								<c:when test="${grade eq 'manager'}">
 									<a href="/servlet/notice_update?idnotice=${notice.idnotice}">${notice.subject}</a>
 								</c:when>
-								<c:otherwise>
-							${notice.subject}
-							</c:otherwise>
+								<c:otherwise>${notice.subject}</c:otherwise>
 							</c:choose></td>
 						<td>${notice.content}</td>
 						<c:if test="${grade eq 'manager'}">
-							<td><a
-								href="/servlet/notice_delete?idnotice=${notice.idnotice}">글삭제</a></td>
+							<td><a href="/servlet/notice_delete?idnotice=${notice.idnotice}">글삭제</a></td>
 						</c:if>
 					</tr>
 				</c:forEach>
@@ -58,7 +56,8 @@
 			</div>
 			<c:if test="${grade eq 'manager'}">
 				<div class="write">
-					<input class="write_button" type="button" id="noticeWrite" name="noticeWrite" value="글쓰기" />
+					<input class="write_button" type="button" id="noticeWrite"
+						name="noticeWrite" value="글쓰기" />
 				</div>
 			</c:if>
 		</div>
